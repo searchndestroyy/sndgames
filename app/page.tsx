@@ -303,13 +303,22 @@ function AccountModal({
             </div>
             <h2 className="font-display mb-1 text-xl font-bold text-white">{currentUser}</h2>
             <p className="mb-6 text-sm text-[#555]">local account</p>
-            <button
-              onClick={() => { onLogout(); onClose() }}
-              className="flex items-center gap-2 rounded-lg bg-[#1a1a1a] px-5 py-2.5 text-sm font-semibold text-[#888] transition-colors hover:bg-[#222] hover:text-white"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign Out
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { onClose(); document.dispatchEvent(new CustomEvent('openProfile', { detail: currentUser })) }}
+                className="flex items-center gap-2 rounded-lg bg-[#ff4d00]/10 px-5 py-2.5 text-sm font-semibold text-[#ff4d00] transition-colors hover:bg-[#ff4d00]/20"
+              >
+                <User className="h-4 w-4" />
+                Profile
+              </button>
+              <button
+                onClick={() => { onLogout(); onClose() }}
+                className="flex items-center gap-2 rounded-lg bg-[#1a1a1a] px-5 py-2.5 text-sm font-semibold text-[#888] transition-colors hover:bg-[#222] hover:text-white"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -372,6 +381,100 @@ function AccountModal({
             {loading ? "loading..." : mode === "login" ? "Sign In" : "Create Account"}
           </button>
         </form>
+      </div>
+    </div>
+  )
+}
+
+/* ─────────────────── PROFILE MODAL ─────────────────── */
+function ProfileModal({
+  username, currentUser, onClose,
+}: {
+  username: string
+  currentUser: string | null
+  onClose: () => void
+}) {
+  const [user, setUser] = useState<{ username: string; createdAt: number; bio?: string } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [editing, setEditing] = useState(false)
+  const [bio, setBio] = useState("")
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    import("@/lib/user-store").then(({ fetchUser }) => {
+      fetchUser(username).then((res) => {
+        if (res.ok && res.user) {
+          setUser(res.user)
+          setBio(res.user.bio || "")
+        }
+        setLoading(false)
+      })
+    })
+  }, [username])
+
+  const handleSave = async () => {
+    if (bio.length > 1000) return
+    setSaving(true)
+    const { updateBio } = await import("@/lib/user-store")
+    const res = await updateBio(username, bio)
+    if (res.ok) {
+      setUser(prev => prev ? { ...prev, bio } : null)
+      setEditing(false)
+    }
+    setSaving(false)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="w-full max-w-sm rounded-xl border border-[#222] bg-[#111] p-6 text-white relative">
+        <button onClick={onClose} className="absolute right-4 top-4 text-[#555] hover:text-white">
+          <X className="h-5 w-5" />
+        </button>
+        {loading ? (
+          <div className="flex h-32 items-center justify-center text-sm text-[#555]">loading...</div>
+        ) : !user ? (
+          <div className="flex h-32 items-center justify-center text-sm text-[#555]">user not found</div>
+        ) : (
+          <div className="flex flex-col items-center">
+            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-[#ff4d00] text-2xl font-bold">
+              {user.username[0].toUpperCase()}
+            </div>
+            <h2 className="mb-1 text-xl font-bold">{user.username}</h2>
+            <p className="mb-4 text-xs text-[#555]">joined {new Date(user.createdAt).toLocaleDateString()}</p>
+            
+            <div className="w-full rounded-lg bg-[#1a1a1a] p-3 border border-[#222]">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#666]">Bio</span>
+                {currentUser === user.username && !editing && (
+                  <button onClick={() => setEditing(true)} className="text-xs text-[#ff4d00] hover:underline">Edit</button>
+                )}
+              </div>
+              
+              {editing ? (
+                <div className="flex flex-col gap-2">
+                  <textarea 
+                    value={bio} 
+                    onChange={e => setBio(e.target.value)} 
+                    maxLength={1000}
+                    className="w-full resize-none rounded bg-[#111] p-2 text-sm text-[#ccc] outline-none border border-[#222] focus:border-[#ff4d00]/50 min-h-[80px]"
+                    placeholder="Tell us about yourself..."
+                  />
+                  <div className="flex justify-between items-center text-[10px] text-[#555]">
+                    <span>{bio.length}/1000</span>
+                    <div className="flex gap-2">
+                      <button onClick={() => { setEditing(false); setBio(user.bio || "") }} className="hover:text-white">Cancel</button>
+                      <button onClick={handleSave} disabled={saving} className="text-[#ff4d00] hover:text-[#ff4d00]/80">Save</button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-[#ccc] min-h-[40px] whitespace-pre-wrap break-words">
+                  {user.bio || <span className="italic text-[#555]">no bio yet.</span>}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -791,7 +894,7 @@ function SettingsModal({
 }
 
 /* ─────────────────── CHAT PANEL ─────────────────── */
-function ChatPanel({ username, onClose }: { username: string | null; onClose: () => void }) {
+function ChatPanel({ username, onClose, onProfileClick }: { username: string | null; onClose: () => void; onProfileClick: (u: string) => void }) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [text, setText] = useState("")
   const [sending, setSending] = useState(false)
@@ -899,14 +1002,19 @@ function ChatPanel({ username, onClose }: { username: string | null; onClose: ()
         {messages.map(msg => (
           <div key={msg.id} className={`flex gap-2 ${msg.username === username ? "flex-row-reverse" : ""}`}>
             <div
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white cursor-pointer hover:opacity-80"
               style={{ background: `hsl(${hue(msg.username)}, 65%, 45%)` }}
+              onClick={() => onProfileClick(msg.username)}
             >
               {msg.username[0].toUpperCase()}
             </div>
             <div className={`min-w-0 max-w-[200px] ${msg.username === username ? "items-end" : "items-start"} flex flex-col`}>
               <div className={`flex items-baseline gap-1.5 mb-1 ${msg.username === username ? "flex-row-reverse" : ""}`}>
-                <span className="text-[11px] font-bold" style={{ color: `hsl(${hue(msg.username)}, 65%, 60%)` }}>
+                <span 
+                  className="text-[11px] font-bold cursor-pointer hover:underline" 
+                  style={{ color: `hsl(${hue(msg.username)}, 65%, 60%)` }}
+                  onClick={() => onProfileClick(msg.username)}
+                >
                   {msg.username}
                 </span>
                 <span className="text-[10px] text-[#333]">{fmt(msg.timestamp)}</span>
@@ -978,6 +1086,7 @@ export default function SndGames() {
   const [showChat, setShowChat] = useState(false)
   const [showMoviesDisclaimer, setShowMoviesDisclaimer] = useState(false)
   const [moviesAccepted, setMoviesAccepted] = useState(false)
+  const [viewingProfile, setViewingProfile] = useState<string | null>(null)
 
   /* ── Search ── */
   const [searchOpen, setSearchOpen] = useState(false)
@@ -1000,7 +1109,16 @@ export default function SndGames() {
   const identifier = username || "anon"
   const featured = useMemo(() => games.slice(0, FEATURED_COUNT), [])
 
-  /* ── Init ── */
+  useEffect(() => {
+    const handleOpenProfile = (e: Event) => {
+      const customEvent = e as CustomEvent<string>
+      setViewingProfile(customEvent.detail)
+    }
+    document.addEventListener("openProfile", handleOpenProfile)
+    return () => document.removeEventListener("openProfile", handleOpenProfile)
+  }, [])
+
+  /* ── Startup & Storage ── */
   useEffect(() => {
     const t = getStoredTheme()
     setThemeState(t)
@@ -1430,6 +1548,14 @@ export default function SndGames() {
         />
       )}
 
+      {viewingProfile && (
+        <ProfileModal
+          username={viewingProfile}
+          currentUser={username}
+          onClose={() => setViewingProfile(null)}
+        />
+      )}
+
       {showSettings && (
         <SettingsModal
           onClose={() => setShowSettings(false)}
@@ -1459,7 +1585,7 @@ export default function SndGames() {
       )}
 
       {/* Chat panel */}
-      {showChat && <ChatPanel username={username} onClose={() => setShowChat(false)} />}
+      {showChat && <ChatPanel username={username} onClose={() => setShowChat(false)} onProfileClick={(u) => setViewingProfile(u)} />}
     </div>
   )
 }
