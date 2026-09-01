@@ -4,6 +4,8 @@ export type Game = { title: string; url: string; category: string }
 // Categories: editors-choice, html, arcade, car, bike, multiplayer, io, od (older devices), atari, clc (clicker), horror
 const raw: [string, string, string][] = [
   // Editor's Choice (add your favorites here!)
+  ["Eaglercraft (Minecraft) 1.12", "https://client.eaglercraft.win/eagler-files/wasm/1.12/Main/index.html", "editors-choice"],
+  ["Eaglercraft (Minecraft) 1.8.9", "https://client.eaglercraft.win/eagler-files/wasm/1.8/AstraClient/index.html", "editors-choice"],
   ["GTA Vice City", "https://selenite1.freetls.fastly.net/resources/semag/gtavc/index.html", "editors-choice"],
 
   // HTML Games
