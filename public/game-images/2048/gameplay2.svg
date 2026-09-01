@@ -1,0 +1,5 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#d35400"/>
+  <text x="200" y="150" font-family="Arial" font-size="24" fill="#f1c40f" text-anchor="middle">2048</text>
+  <text x="200" y="180" font-family="Arial" font-size="16" fill="#ecf0f1" text-anchor="middle">Gameplay 2 - High Score</text>
+</svg>

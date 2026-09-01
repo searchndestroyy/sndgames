@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Image Loading</title>
+</head>
+<body>
+    <h1>Testing Image Loading</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function checkImage(src) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = src;
+            });
+        }
+        
+        async function testImages() {
+            const testPaths = [
+                'game-images/2048/thumbnail.png',
+                'game-images/1v1-lol/thumbnail.png',
+                'game-images/gta-vice-city/thumbnail.png'
+            ];
+            
+            const results = document.getElementById('results');
+            
+            for (const path of testPaths) {
+                const exists = await checkImage(path);
+                const div = document.createElement('div');
+                div.innerHTML = `${path}: ${exists ? '✅ FOUND' : '❌ NOT FOUND'}`;
+                div.style.margin = '10px';
+                div.style.padding = '10px';
+                div.style.border = exists ? '1px solid green' : '1px solid red';
+                results.appendChild(div);
+            }
+        }
+        
+        testImages();
+    </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
+
+/* ─── Design Tokens ─── */
+:root {
+  /* Default: dark */
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --surface-2: #1a1a1a;
+  --surface-hover: #1e1e1e;
+  --border: #252525;
+  --border-strong: #333333;
+  --text: #f0f0f0;
+  --text-muted: #777777;
+  --text-faint: #333333;
+  --accent: #ff4d00;
+  --accent-dim: rgba(255, 77, 0, 0.12);
+  --accent-dim-2: rgba(255, 77, 0, 0.06);
+  --radius: 6px;
+}
+
+/* Light mode overrides */
+.light {
+  --bg: #f7f7f7;
+  --surface: #ffffff;
+  --surface-2: #f0f0f0;
+  --surface-hover: #ebebeb;
+  --border: #e2e2e2;
+  --border-strong: #cccccc;
+  --text: #111111;
+  --text-muted: #888888;
+  --text-faint: #cccccc;
+  --accent: #ff4d00;
+  --accent-dim: rgba(255, 77, 0, 0.08);
+  --accent-dim-2: rgba(255, 77, 0, 0.04);
+}
+
+/* ─── Theme map ─── */
+@theme inline {
+  --font-sans: var(--font-inter, 'Inter'), system-ui, sans-serif;
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-border: var(--border);
+}
+
+/* ─── Base ─── */
+@layer base {
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-inter, 'Inter'), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-space-grotesk, 'Space Grotesk'), system-ui, sans-serif;
+  }
+}
+
+/* ─── Typography helpers ─── */
+.font-display {
+  font-family: var(--font-space-grotesk, 'Space Grotesk'), system-ui, sans-serif;
+}
+
+/* ─── Scrollbar hide utility ─── */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ─── Scrollbar styling ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ─── Selection ─── */
+::selection { background: var(--accent-dim); color: var(--accent); }
+
+/* ═══════════════════════════════════════════════════
+   COMPONENTS
+═══════════════════════════════════════════════════ */
+
+/* ─── Site header ─── */
+.site-header {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+/* ─── Tab nav underline indicator ─── */
+.tab-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 0 2px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color 0.15s ease;
+  letter-spacing: 0.01em;
+}
+
+.tab-nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-nav-item.active {
+  color: var(--text);
+}
+
+.tab-nav-item.active::after {
+  transform: scaleX(1);
+}
+
+/* ─── Card (flat, orange ring on hover) ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.15s ease;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--accent);
+}
+
+/* ─── Accent button ─── */
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: opacity 0.12s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.btn-accent:hover { opacity: 0.85; }
+.btn-accent:active { opacity: 0.7; }
+.btn-accent:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ─── Flat/ghost button ─── */
+.btn-flat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease;
+  white-space: nowrap;
+}
+
+.btn-flat:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+/* ─── Search input ─── */
+.search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  transition: border-color 0.12s ease;
+}
+
+.search-input::placeholder { color: var(--text-muted); }
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ─── Category pill ─── */
+.cat-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  transition: all 0.12s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.cat-pill:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.cat-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+/* ─── Modal overlay — NO blur, NO glass ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* ─── Animations ─── */
+@keyframes snd-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes snd-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes snd-scale-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.fade-in    { animation: snd-fade-in 0.2s ease forwards; }
+.slide-up   { animation: snd-slide-up 0.22s ease forwards; }
+.scale-in   { animation: snd-scale-in 0.18s ease forwards; }

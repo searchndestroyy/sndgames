@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" fill="none">
+  <rect width="400" height="225" fill="#0a0a1a"/>
+  <rect x="1" y="1" width="398" height="223" rx="12" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/>
+  <circle cx="200" cy="100" r="40" fill="rgba(56,189,248,0.15)" stroke="rgba(56,189,248,0.3)" stroke-width="2"/>
+  <path d="M188 85 L220 100 L188 115 Z" fill="rgba(56,189,248,0.8)"/>
+  <text x="200" y="170" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="system-ui" font-size="14">Add thumbnail.png</text>
+</svg>

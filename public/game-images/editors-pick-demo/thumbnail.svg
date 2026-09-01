@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225">
+  <rect width="400" height="225" fill="#0a0a1a"/>
+  <circle cx="200" cy="100" r="40" fill="none" stroke="#fbbf24" stroke-width="3"/>
+  <path d="M185 95 L220 95 L220 105 L185 105 Z" fill="#fbbf24"/>
+  <path d="M195 85 L195 115" stroke="#fbbf24" stroke-width="10"/>
+  <text x="200" y="175" text-anchor="middle" fill="#fbbf24" font-family="system-ui" font-size="18" font-weight="600">EDITOR'S CHOICE</text>
+</svg>
